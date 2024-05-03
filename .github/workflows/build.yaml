@@ -17,15 +17,7 @@ jobs:
         dotnet-version: 8.0.x
         cache: true
         cache-dependency-path: '**/packages.lock.json'
-    - name: Cache nuget packages
-      id: cache-nuget
-      uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: nuget-${{ hashFiles('**/packages.lock.json') }}
-   
-    - name: Restore nuget packages
-      if: ${{ steps.cache-nuget.outputs.cache-hit != 'true' }}
+    - name: Restore dependencies
       run: dotnet restore --locked-mode
     - name: Build
       run: dotnet build --configuration Release --no-restore
