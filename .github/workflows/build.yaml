@@ -3,35 +3,20 @@ name: ReferralCodesHub build
 on:
   push:
 
-env:
-  DOTNET_VERSION: 8.0.x
-  DOTNET_INSTALL_KEY: 'ubuntu-latest-dotnet'
-  DOTNET_INSTALL_DIR: /usr/share/dotnet
-
 jobs:
   build-and-test:
 
     name: build-ubuntu-latest
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-       working-directory: ${{ github.workspace }}
-
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Cache dependencies
-      id: cache-nuget
-      uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: nuget-${{ hashFiles('**/packages.lock.json') }}
+        dotnet-version: 8.0.x
+        cache: true
     - name: Restore dependencies
-      if: ${{ steps.cache-nuget.outputs.cache-hit != 'true' }}
       run: dotnet restore --locked-mode
     - name: Build
       run: dotnet build --configuration Release --no-restore
