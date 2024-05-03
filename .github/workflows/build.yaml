@@ -24,6 +24,7 @@ jobs:
       id: cache-nuget
       uses: actions/cache@v4
       with:
+        workdir: ${{ github.workspace }}
         path: ~/.nuget/packages
         key: nuget-${{ hashFiles('**/packages.lock.json') }}
     - name: Restore dependencies
