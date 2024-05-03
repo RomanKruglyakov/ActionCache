@@ -1,0 +1,52 @@
+name: ReferralCodesHub build
+
+on:
+  push:
+
+env:
+  DOTNET_VERSION: 8.0.204
+  DOTNET_INSTALL_DIR: /usr/share/dotnet
+  DOTNET_INSTALL_KEY: 'ubuntu-latest-dotnet'
+
+jobs:
+  build-and-test:
+
+    name: build-ubuntu-latest
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.DOTNET_INSTALL_DIR }}
+        key: ${{ env.DOTNET_INSTALL_KEY }}-${{ env.DOTNET_VERSION }}
+   
+    - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        cache: true
+        cache-dependency-path: '**/packages.lock.json'
+        
+    - name: Set dotnet Path
+      run: echo ${{ env.DOTNET_INSTALL_DIR }} >> $GITHUB_PATH
+      shell: bash
+
+    - name: Cache nuget packages
+      id: cache-nuget
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: nuget-${{ hashFiles('**/packages.lock.json') }}
+   
+    - name: Restore nuget packages
+      if: ${{ steps.cache-nuget.outputs.cache-hit != 'true' }}
+      run: dotnet restore --locked-mode
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
