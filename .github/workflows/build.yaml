@@ -7,6 +7,8 @@ env:
   DOTNET_VERSION: 8.0.x
   DOTNET_INSTALL_KEY: 'ubuntu-latest-dotnet'
   DOTNET_INSTALL_DIR: /usr/share/dotnet
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
 
 jobs:
   build-and-test:
